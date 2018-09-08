@@ -14,12 +14,13 @@ public class KafkaConsumerSubscribeApp {
             props.put("bootstrap.servers" , "localhost:9092, localhost:9093");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("group.id", "test");
 
         KafkaConsumer<String, String> myConsumer = new KafkaConsumer<String, String>(props);
 
         List<String> topics = new ArrayList<String>();
         topics.add("my-topic");
-        //topics.add("my-other-topic");
+        topics.add("my-other-topic");
 
 
         myConsumer.subscribe(topics);
@@ -29,7 +30,8 @@ public class KafkaConsumerSubscribeApp {
             while(true){
                 ConsumerRecords<String, String> records = myConsumer.poll(10);
                 for(ConsumerRecord<String, String> record : records){
-                    System.out.println(record.key() + record.value());
+                    System.out.println(String.format("Topic: %s , Partition : %s, Offset: %s, Key: %s, Value: %s", record.topic(),
+                            record.partition(), record.offset(), record.key(), record.value()));
                 }
             }
         } catch(Exception ex){
